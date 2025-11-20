@@ -1,0 +1,570 @@
+const TOKEN = localStorage.getItem("token");
+const evenementId = new URLSearchParams(window.location.search).get("id");
+let eventData = null;
+
+async function loadEventDetails() {
+  try {
+    const res = await fetch(`/api/evenements/${evenementId}`, {
+      headers: { "Authorization": "Bearer " + TOKEN }
+    });
+    const data = await res.json();
+    
+    const evenement = data.evenement || data;
+    
+    if (evenement && evenement.nom) {
+      eventData = evenement;
+      const titleEl = document.getElementById("event-title");
+      const infoEl = document.getElementById("event-info");
+      if (titleEl) titleEl.textContent = `📅 ${evenement.nom}`;
+      if (infoEl) infoEl.textContent = `Lieu : ${evenement.lieu || "non précisé"} • Statut : ${evenement.statut}`;
+    }
+  } catch (err) {
+    console.error("[EventDetails] Erreur:", err);
+  }
+}
+
+async function loadGroupes() {
+  const ul = document.getElementById("groupes-list");
+  if (!ul) return;
+  
+  ul.innerHTML = "";
+  try {
+    const res = await fetch(`/api/evenements/${evenementId}/groupes`, {
+      headers: { "Authorization": "Bearer " + TOKEN }
+    });
+    const data = await res.json();
+
+    const groupes = Array.isArray(data) ? data : (data.groupes || []);
+
+    if (groupes.length > 0) {
+      groupes.forEach(g => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        
+        const nomEscaped = (g.nom || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        const descEscaped = (g.description || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        
+        li.innerHTML = `
+          <span class="groupe-name" style="cursor: pointer; color: #0d6efd; text-decoration: underline;" 
+                onclick="openEditModal(${g.id}, '${nomEscaped}', '${descEscaped}', ${g.responsable_id || 'null'})">${g.nom}</span>
+          <div>
+            <button class="btn btn-sm btn-outline-success me-2" onclick="openCreneauxModal(${g.id}, '${nomEscaped}')">
+              <i class="bi bi-calendar3"></i> Créneaux
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="removeGroupe(${g.id})">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>`;
+        ul.appendChild(li);
+      });
+    } else {
+      ul.innerHTML = "<li class='list-group-item text-center text-muted'>Aucun groupe lié</li>";
+    }
+  } catch (err) {
+    console.error("[LoadGroupes] Erreur:", err);
+    ul.innerHTML = "<li class='list-group-item text-center text-danger'>Erreur de chargement</li>";
+  }
+}
+
+async function loadSelectableGroupes() {
+  const select = document.getElementById("select-groupe");
+  if (!select) return;
+  
+  try {
+    const res = await fetch("/api/groupes", {
+      headers: { "Authorization": "Bearer " + TOKEN }
+    });
+    const data = await res.json();
+    
+    const groupes = Array.isArray(data) ? data : (data.groupes || []);
+    
+    select.innerHTML = '<option value="">-- Choisir un groupe --</option>';
+    groupes.forEach(g => {
+      const opt = document.createElement("option");
+      opt.value = g.id;
+      opt.textContent = g.nom;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("[LoadSelectableGroupes] Erreur:", err);
+  }
+}
+
+async function loadResponsablesSelect(selectId = "groupeResp") {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  try {
+    const res = await fetch("/api/users", {
+      headers: { "Authorization": "Bearer " + TOKEN }
+    });
+    const data = await res.json();
+    
+    const users = Array.isArray(data) ? data : (data.users || []);
+    
+    select.innerHTML = '<option value="">-- Aucun --</option>';
+    users
+      .filter(u => u.role === "admin")
+      .forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.id;
+        opt.textContent = `${u.username} (${u.role})`;
+        select.appendChild(opt);
+      });
+  } catch (err) {
+    console.error("[loadResponsablesSelect] Erreur:", err);
+  }
+}
+
+function openCreneauxModal(groupeId, groupeNom) {
+  console.log(`[Créneaux] Ouverture pour groupe ${groupeId}: ${groupeNom}`);
+  
+  const modalEl = document.getElementById("modalCreneaux");
+  if (!modalEl) {
+    alert("⚠️ Module créneaux non chargé");
+    return;
+  }
+  
+  window.currentGroupeId = groupeId;
+  
+  const titleEl = document.getElementById("crn-group-name");
+  if (titleEl) titleEl.textContent = groupeNom;
+  
+  const form = document.getElementById("formAddCreneau");
+  const btnToggle = document.getElementById("btnToggleForm");
+  if (form) form.style.display = "none";
+  if (btnToggle) btnToggle.style.display = "block";
+  
+  // Réinitialiser le formulaire en mode "ajout"
+  resetCreneauForm();
+  
+  setDefaultDates();
+  loadCreneauxForGroupe(groupeId);
+  
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+
+function setDefaultDates() {
+  const debutEl = document.getElementById("crn-debut");
+  const finEl = document.getElementById("crn-fin");
+  const notesEl = document.getElementById("crn-notes");
+  
+  if (!debutEl || !finEl) return;
+  
+  let baseDate;
+  
+  if (eventData && eventData.date_debut) {
+    baseDate = new Date(eventData.date_debut);
+  } else {
+    baseDate = new Date();
+    baseDate.setHours(18, 0, 0, 0);
+  }
+  
+  const endDate = new Date(baseDate.getTime() + 2 * 3600 * 1000);
+  
+  const formatDatetimeLocal = (d) => {
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+  
+  debutEl.value = formatDatetimeLocal(baseDate);
+  finEl.value = formatDatetimeLocal(endDate);
+  
+  document.getElementById("crn-nb-min").value = "1";
+  document.getElementById("crn-nb-max").value = "3";
+  if (notesEl) notesEl.value = "";
+}
+
+function resetCreneauForm() {
+  // Réinitialiser le mode "édition"
+  window.editingCreneauId = null;
+  
+  // Changer le titre et bouton
+  const formTitle = document.querySelector("#formAddCreneau h6");
+  const submitBtn = document.querySelector("#formAddCreneau button[type='submit']");
+  
+  if (formTitle) formTitle.textContent = "➕ Ajouter un créneau";
+  if (submitBtn) {
+    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Ajouter';
+    submitBtn.className = "btn btn-success w-100";
+  }
+}
+
+async function loadCreneauxForGroupe(groupeId) {
+  const tbody = document.querySelector("#crn-table tbody");
+  if (!tbody) return;
+  
+  tbody.innerHTML = '<tr><td colspan="8" class="text-center">Chargement...</td></tr>';
+  
+  try {
+    const res = await fetch(`/api/creneaux?groupe_id=${groupeId}`, {
+      credentials: "include",
+      headers: { 
+        "Authorization": "Bearer " + TOKEN,
+        "X-Requested-With": "fetch" 
+      }
+    });
+    const data = await res.json();
+    
+    const creneaux = Array.isArray(data) ? data : (data.creneaux || []);
+    
+    if (creneaux.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucun créneau</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = "";
+    creneaux.forEach(c => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${c.id}</td>
+        <td>${formatDate(c.debut)}</td>
+        <td>${formatDate(c.fin)}</td>
+        <td>${c.nb_min || 1}</td>
+        <td>${c.nb_max || 3}</td>
+        <td>${c.notes || "-"}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary me-1" onclick='editCreneau(${JSON.stringify(c)})' title="Modifier">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteCreneau(${c.id})" title="Supprimer">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    
+  } catch (err) {
+    console.error("[loadCreneauxForGroupe] Erreur:", err);
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Erreur: ${err.message}</td></tr>`;
+  }
+}
+
+function editCreneau(creneau) {
+  console.log("[editCreneau]", creneau);
+  
+  // Stocker l'ID du créneau en cours d'édition
+  window.editingCreneauId = creneau.id;
+  
+  // Remplir le formulaire avec les données existantes
+  const formatDatetimeLocal = (isoDate) => {
+    if (!isoDate) return "";
+    const d = new Date(isoDate);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+  
+  document.getElementById("crn-debut").value = formatDatetimeLocal(creneau.debut);
+  document.getElementById("crn-fin").value = formatDatetimeLocal(creneau.fin);
+  document.getElementById("crn-nb-min").value = creneau.nb_min || 1;
+  document.getElementById("crn-nb-max").value = creneau.nb_max || 3;
+  document.getElementById("crn-notes").value = creneau.notes || "";
+  
+  // Changer le titre et le bouton du formulaire
+  const formTitle = document.querySelector("#formAddCreneau h6");
+  const submitBtn = document.querySelector("#formAddCreneau button[type='submit']");
+  
+  if (formTitle) formTitle.textContent = "✏️ Modifier le créneau";
+  if (submitBtn) {
+    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Enregistrer';
+    submitBtn.className = "btn btn-primary w-100";
+  }
+  
+  // Afficher le formulaire
+  const form = document.getElementById("formAddCreneau");
+  const btnToggle = document.getElementById("btnToggleForm");
+  if (form) form.style.display = "block";
+  if (btnToggle) btnToggle.style.display = "none";
+  
+  // Scroll vers le formulaire
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function addCreneau(e) {
+  e.preventDefault();
+  
+  const debut = document.getElementById("crn-debut").value;
+  const fin = document.getElementById("crn-fin").value;
+  const nb_min = document.getElementById("crn-nb-min").value || 1;
+  const nb_max = document.getElementById("crn-nb-max").value || 3;
+  const notes = document.getElementById("crn-notes").value || "";
+  
+  if (!debut || !fin) {
+    alert("⚠️ Veuillez renseigner les dates de début et fin");
+    return;
+  }
+  
+  const debutUTC = new Date(debut).toISOString();
+  const finUTC = new Date(fin).toISOString();
+  
+  // Vérifier si on est en mode édition ou ajout
+  const isEditing = window.editingCreneauId;
+  const method = isEditing ? "PUT" : "POST";
+  const url = isEditing ? `/api/creneaux/${window.editingCreneauId}` : "/api/creneaux";
+  
+  try {
+    const res = await fetch(url, {
+      method: method,
+      credentials: "include",
+      headers: {
+        "Authorization": "Bearer " + TOKEN,
+        "Content-Type": "application/json",
+        "X-Requested-With": "fetch"
+      },
+      body: JSON.stringify({
+        groupe_id: window.currentGroupeId,
+        debut: debutUTC,
+        fin: finUTC,
+        nb_min: parseInt(nb_min),
+        nb_max: parseInt(nb_max),
+        notes
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.ok) {
+      resetCreneauForm();
+      setDefaultDates();
+      loadCreneauxForGroupe(window.currentGroupeId);
+      
+      const form = document.getElementById("formAddCreneau");
+      const btnToggle = document.getElementById("btnToggleForm");
+      if (form) form.style.display = "none";
+      if (btnToggle) btnToggle.style.display = "block";
+      
+      alert(isEditing ? "✅ Créneau modifié avec succès" : "✅ Créneau ajouté avec succès");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[addCreneau] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+async function deleteCreneau(creneauId) {
+  if (!confirm("Supprimer ce créneau ?")) return;
+  
+  try {
+    const res = await fetch(`/api/creneaux/${creneauId}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: { 
+        "Authorization": "Bearer " + TOKEN,
+        "X-Requested-With": "fetch" 
+      }
+    });
+    const data = await res.json();
+    
+    if (data.ok) {
+      loadCreneauxForGroupe(window.currentGroupeId);
+      alert("✅ Créneau supprimé avec succès");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[deleteCreneau] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+function formatDate(isoDate) {
+  if (!isoDate) return "-";
+  const d = new Date(isoDate);
+  return d.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function openEditModal(groupeId, nom, description, responsableId) {
+  const idEl = document.getElementById("editGroupeId");
+  const nomEl = document.getElementById("editGroupeNom");
+  const descEl = document.getElementById("editGroupeDesc");
+  const respEl = document.getElementById("editGroupeResp");
+  
+  if (!idEl || !nomEl || !descEl || !respEl) {
+    console.error("[openEditModal] Éléments de la modale introuvables");
+    return;
+  }
+  
+  idEl.value = groupeId;
+  nomEl.value = nom;
+  descEl.value = description;
+  respEl.value = responsableId || "";
+  
+  const modalEl = document.getElementById("modalEditGroupe");
+  if (modalEl) {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+}
+
+async function updateGroupe(e) {
+  e.preventDefault();
+  const groupeId = document.getElementById("editGroupeId").value;
+  const nom = document.getElementById("editGroupeNom").value.trim();
+  const description = document.getElementById("editGroupeDesc").value.trim();
+  const responsable_id = document.getElementById("editGroupeResp").value || null;
+
+  try {
+    const res = await fetch(`/api/groupes/${groupeId}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": "Bearer " + TOKEN,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ nom, description, responsable_id })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      const modalEl = document.getElementById("modalEditGroupe");
+      if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      loadGroupes();
+      alert("✅ Groupe modifié avec succès");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[updateGroupe] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+async function createNewGroupe(e) {
+  e.preventDefault();
+  const nom = document.getElementById("groupeNom").value.trim();
+  const description = document.getElementById("groupeDesc").value.trim();
+  const responsable_id = document.getElementById("groupeResp").value || null;
+
+  try {
+    const res = await fetch("/api/groupes", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + TOKEN,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ nom, description, responsable_id, evenement_id: evenementId })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      const modalEl = document.getElementById("modalNewGroupe");
+      if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      loadGroupes();
+      const formEl = document.getElementById("formNewGroupe");
+      if (formEl) formEl.reset();
+      alert("✅ Groupe créé avec succès");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[createNewGroupe] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+async function addGroupeToEvent() {
+  const groupeId = document.getElementById("select-groupe")?.value;
+  if (!groupeId) return alert("Choisis un groupe");
+
+  try {
+    const res = await fetch(`/api/evenements/${evenementId}/groupes`, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + TOKEN,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ groupe_id: groupeId })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      loadGroupes();
+      alert("✅ Groupe ajouté à l'événement");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[AddGroupeToEvent] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+async function removeGroupe(groupeId) {
+  if (!confirm("Supprimer ce groupe de l'événement ?")) return;
+  try {
+    const res = await fetch(`/api/evenements/${evenementId}/groupes/${groupeId}`, {
+      method: "DELETE",
+      headers: { "Authorization": "Bearer " + TOKEN }
+    });
+    const data = await res.json();
+    if (data.ok) {
+      loadGroupes();
+      alert("✅ Groupe retiré de l'événement");
+    } else {
+      alert("❌ Erreur: " + data.error);
+    }
+  } catch (err) {
+    console.error("[RemoveGroupe] Erreur:", err);
+    alert("❌ Erreur réseau");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadEventDetails();
+  loadGroupes();
+  loadSelectableGroupes();
+  loadResponsablesSelect("groupeResp");
+  loadResponsablesSelect("editGroupeResp");
+
+  const newGroupBtn = document.getElementById("newGroupBtn");
+  if (newGroupBtn) {
+    newGroupBtn.addEventListener("click", () => {
+      const modalEl = document.getElementById("modalNewGroupe");
+      if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      }
+    });
+  }
+  
+  const notesTextarea = document.getElementById("crn-notes");
+  if (notesTextarea) {
+    notesTextarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+  }
+  
+  const btnToggle = document.getElementById("btnToggleForm");
+  const btnClose = document.getElementById("btnCloseForm");
+  const form = document.getElementById("formAddCreneau");
+  
+  if (btnToggle && form) {
+    btnToggle.addEventListener("click", () => {
+      resetCreneauForm();
+      setDefaultDates();
+      form.style.display = "block";
+      btnToggle.style.display = "none";
+    });
+  }
+  
+  if (btnClose && form && btnToggle) {
+    btnClose.addEventListener("click", () => {
+      resetCreneauForm();
+      form.style.display = "none";
+      btnToggle.style.display = "block";
+    });
+  }
+});

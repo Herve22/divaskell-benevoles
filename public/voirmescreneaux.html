@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes créneaux</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/modal-fix.css" rel="stylesheet">
+
+  <style>
+    body { background:#f5f5f5; padding:1rem; font-family: 'Segoe UI', sans-serif; }
+    h1 { font-size:1.5rem; color:#333; margin-bottom:1rem; }
+    .creneau { background:white; border-radius:12px; padding:1rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    .groupe { font-weight:bold; color:#007bff; }
+    .horaire { font-size:0.9rem; color:#666; }
+    .badge-statut { font-size:0.8rem; }
+    button.btn-cancel { background:#dc3545; color:white; border:none; border-radius:6px; padding:0.4rem 0.7rem; font-size:0.8rem; }
+  </style>
+</head>
+<body>
+  <h1>👋 Mes créneaux</h1>
+  <div id="list"></div>
+
+  <script>
+    async function fetchMesCreneaux() {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        document.getElementById("list").innerHTML = `
+          <div class='alert alert-warning'>
+            Vous n'êtes pas connecté.<br>
+            <a href="login.html">Se connecter</a>
+          </div>`;
+        return;
+      }
+
+      const res = await fetch("/api/inscriptions?user=me", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      const json = await res.json();
+      if (!json.ok) {
+        document.getElementById("list").innerHTML = `<div class='alert alert-danger'>Erreur : ${json.error}</div>`;
+        return;
+      }
+
+      if (json.data.length === 0) {
+        document.getElementById("list").innerHTML = `<div class='alert alert-info'>Aucun créneau pour le moment.</div>`;
+        return;
+      }
+
+      const container = document.getElementById("list");
+      container.innerHTML = "";
+
+      json.data.forEach(c => {
+        const dDebut = new Date(c.debut);
+        const dFin = new Date(c.fin);
+        const item = document.createElement("div");
+        item.className = "creneau";
+        item.innerHTML = `
+          <div class="groupe">${c.groupe_nom}</div>
+          <div class="horaire">${dDebut.toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit'})} – ${dFin.toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+          <span class="badge bg-${c.statut === 'confirmee' ? 'success' : 'secondary'} badge-statut">${c.statut}</span>
+          <div class="mt-2">
+            <button class="btn-cancel" onclick="annuler(${c.id})">Annuler</button>
+          </div>`;
+        container.appendChild(item);
+      });
+    }
+
+    async function annuler(id) {
+      const token = localStorage.getItem("jwt_token");
+      if (!confirm("Voulez-vous annuler cette inscription ?")) return;
+
+      const res = await fetch("/api/inscriptions/" + id, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      });
+      const json = await res.json();
+      if (json.ok) fetchMesCreneaux();
+      else alert("Erreur : " + json.error);
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchMesCreneaux);
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Divaskell">
+  <defs>
+    <clipPath id="c"><circle cx="256" cy="256" r="240"/></clipPath>
+  </defs>
+  <rect width="512" height="512" fill="#ffffff"/>
+  <!-- arc jaune -->
+  <path d="M94 90a210 210 0 0 1 324 0" fill="none" stroke="#f5b800" stroke-width="28" stroke-linecap="round"/>
+  <path d="M418 422a210 210 0 0 1-324 0" fill="none" stroke="#f5b800" stroke-width="28" stroke-linecap="round"/>
+  <!-- mer -->
+  <g clip-path="url(#c)">
+    <path d="M-10 340q60 40 130 40t130-40q60-40 130-40t130 40v180H-10z" fill="#156e87"/>
+  </g>
+  <!-- rocher -->
+  <path d="M210 300c0-35 24-60 60-60s60 25 60 60v40H210z" fill="#b8aba3"/>
+  <!-- mouette stylisée -->
+  <g fill="#ffffff" stroke="#333" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 200c35 0 64 18 64 40s-29 40-64 40-64-18-64-40 29-40 64-40z" fill="#e9e5e0"/>
+    <circle cx="304" cy="225" r="6" fill="#333"/>
+    <path d="M220 232l-40-20M220 248l-40 20"/>
+    <path d="M292 272l8 26M320 272l-8 26"/>
+  </g>
+</svg>
+ 

@@ -1,0 +1,106 @@
+/* === Admin Bénévoles — Style global === */
+body {
+  background: linear-gradient(180deg, #7a89ff 0%, #8b9bff 100%);
+  font-family: "Inter", sans-serif;
+  color: #222;
+  min-height: 100vh;
+}
+
+.container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-top: 40px;
+}
+
+h1, h2, h3 {
+  color: #333;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #5260ff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #3e4de0;
+}
+
+.btn-success {
+  background-color: #1b9e51;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #138c45;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* === MODALE Bootstrap === */
+.modal-backdrop.show {
+  opacity: 0.55;
+}
+
+.modal-content {
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border: none;
+  animation: modalFade 0.3s ease-out;
+}
+
+.modal-header {
+  background-color: #5260ff;
+  color: #fff;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.btn-close {
+  filter: invert(1);
+}
+
+.modal-body {
+  padding: 20px 25px;
+  background-color: #fafafa;
+}
+
+@keyframes modalFade {
+  from { transform: translateY(-15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* === Inputs et formulaires === */
+input.form-control, select.form-select {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease-in-out;
+}
+
+input.form-control:focus, select.form-select:focus {
+  border-color: #5260ff;
+  box-shadow: 0 0 5px rgba(82, 96, 255, 0.3);
+}
+
+/* === Liens et badges === */
+a {
+  text-decoration: none;
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.4em 0.6em;
+}
+ 

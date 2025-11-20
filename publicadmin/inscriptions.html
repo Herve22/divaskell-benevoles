@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Inscriptions - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/admin.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Le menu sera injecté ici automatiquement par menu.js -->
+
+  <div class="container-fluid mt-4">
+    <div class="row mb-4">
+      <div class="col">
+        <h1><i class="bi bi-person-check"></i> Gestion des Inscriptions</h1>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" onclick="ouvrirModaleCreation()">
+          <i class="bi bi-plus-circle"></i> Nouvelle inscription
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Événement</label>
+            <select id="filtreEvenement" class="form-select">
+              <option value="">Tous les événements</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Groupe</label>
+            <select id="filtreGroupe" class="form-select">
+              <option value="">Tous les groupes</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Créneau</label>
+            <select id="filtreCreneau" class="form-select">
+              <option value="">Tous les créneaux</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Statut</label>
+            <select id="filtreStatut" class="form-select">
+              <option value="">Tous les statuts</option>
+              <option value="confirmee">Confirmée</option>
+              <option value="annulee">Annulée</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <button class="btn btn-secondary" onclick="chargerInscriptions()">
+              <i class="bi bi-search"></i> Filtrer
+            </button>
+            <button class="btn btn-outline-secondary ms-2" onclick="reinitialiserFiltres()">
+              <i class="bi bi-x-circle"></i> Réinitialiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card text-bg-primary">
+          <div class="card-body">
+            <h5 class="card-title">Total Inscriptions</h5>
+            <h2 id="statTotal">0</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-bg-success">
+          <div class="card-body">
+            <h5 class="card-title">Confirmées</h5>
+            <h2 id="statConfirmees">0</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-bg-warning">
+          <div class="card-body">
+            <h5 class="card-title">Annulées</h5>
+            <h2 id="statAnnulees">0</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-bg-info">
+          <div class="card-body">
+            <h5 class="card-title">Bénévoles Uniques</h5>
+            <h2 id="statUniques">0</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tableau des inscriptions -->
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Bénévole</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Événement</th>
+                <th>Groupe</th>
+                <th>Créneau</th>
+                <th>Statut</th>
+                <th>Date inscription</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableauInscriptions">
+              <tr>
+                <td colspan="10" class="text-center">Chargement...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Création/Édition -->
+  <div class="modal fade" id="modaleInscription" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modaleInscriptionTitre">Nouvelle inscription</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formInscription">
+            <input type="hidden" id="inscriptionId">
+            
+            <div class="mb-3">
+              <label class="form-label">Créneau *</label>
+              <select id="inscriptionCreneau" class="form-select" required>
+                <option value="">Sélectionner un créneau</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nom *</label>
+                <input type="text" id="inscriptionNom" class="form-control" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Prénom *</label>
+                <input type="text" id="inscriptionPrenom" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email *</label>
+                <input type="email" id="inscriptionEmail" class="form-control" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Téléphone</label>
+                <input type="tel" id="inscriptionTelephone" class="form-control">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Statut</label>
+              <select id="inscriptionStatut" class="form-select">
+                <option value="confirmee">Confirmée</option>
+                <option value="annulee">Annulée</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Commentaire</label>
+              <textarea id="inscriptionCommentaire" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-primary" onclick="sauvegarderInscription()">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/menu.js"></script>
+  <script type="module" src="js/admin.js"></script>
+  <script type="module" src="js/inscriptions.js"></script>
+</body>
+</html>

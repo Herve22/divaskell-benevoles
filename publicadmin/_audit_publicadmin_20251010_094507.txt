@@ -1,0 +1,106 @@
+# Audit publicadmin /home/debian/benevoles/publicadmin — Fri Oct 10 09:45:07 CEST 2025
+
+## Summary tree (depth 3)
+[175K]  .
+├── [2.5K]  _audit.sh
+├── [ 116]  _audit_publicadmin_20251010_094507.txt
+├── [ 16K]  benevole.html
+├── [6.8K]  creneaux.html
+├── [ 12K]  css
+│   ├── [1.7K]  admin.css
+│   ├── [1.3K]  evenements.css
+│   └── [4.9K]  planning.css
+├── [2.2K]  evenements.html
+├── [7.8K]  eventgroupes.html
+├── [2.6K]  eventgroupes.html.bak.1759932258
+├── [3.4K]  groupes.html
+├── [2.9K]  index.html
+├── [7.2K]  inscriptions.html
+├── [ 96K]  js
+│   ├── [1.5K]  admin.js
+│   ├── [7.2K]  creneaux-ui.js
+│   ├── [2.1K]  creneaux.js
+│   ├── [5.2K]  evenements.js
+│   ├── [7.3K]  eventgroupes-creneaux.js
+│   ├── [ 18K]  eventgroupes.js
+│   ├── [ 10K]  groupes.js
+│   ├── [3.0K]  inject-creneaux-buttons.js
+│   ├── [ 18K]  inscriptions.js
+│   ├── [2.5K]  menu.js
+│   └── [ 17K]  planning.js
+├── [2.4K]  menuadmin.html
+├── [2.7K]  planning.html
+└── [5.6K]  users.html
+
+ 271K used in 3 directories, 27 files
+
+## File counts by extension
+     11 js
+     10 html
+      3 css
+      1 txt
+      1 sh
+      1 1759932258
+
+## Top 30 largest files (apparent size)
+1.3K	./css/evenements.css
+1.4K	./_audit_publicadmin_20251010_094507.txt
+1.5K	./js/admin.js
+1.7K	./css/admin.css
+2.2K	./evenements.html
+2.2K	./js/creneaux.js
+2.5K	./_audit.sh
+2.5K	./js/menu.js
+2.5K	./menuadmin.html
+2.7K	./eventgroupes.html.bak.1759932258
+2.7K	./planning.html
+2.9K	./index.html
+3.1K	./js/inject-creneaux-buttons.js
+3.5K	./groupes.html
+5.0K	./css/planning.css
+5.3K	./js/evenements.js
+5.6K	./users.html
+6.8K	./creneaux.html
+7.2K	./inscriptions.html
+7.2K	./js/creneaux-ui.js
+7.3K	./js/eventgroupes-creneaux.js
+7.9K	./eventgroupes.html
+11K	./js/groupes.js
+12K	./css
+17K	./benevole.html
+18K	./js/eventgroupes.js
+18K	./js/planning.js
+19K	./js/inscriptions.js
+97K	./js
+176K	.
+
+## Detailed listing (mtime, size)
+2025-10-06 11:12       5704  ./users.html
+2025-10-06 14:21       1294  ./css/evenements.css
+2025-10-06 14:23       2497  ./menuadmin.html
+2025-10-07 23:19       2156  ./js/creneaux.js
+2025-10-07 23:22       6934  ./creneaux.html
+2025-10-08 11:51       2252  ./evenements.html
+2025-10-08 12:46       1716  ./css/admin.css
+2025-10-08 13:21       7444  ./js/eventgroupes-creneaux.js
+2025-10-08 16:04       2667  ./eventgroupes.html.bak.1759932258
+2025-10-08 19:24       7368  ./js/creneaux-ui.js
+2025-10-08 19:25       3076  ./js/inject-creneaux-buttons.js
+2025-10-08 22:59       3501  ./groupes.html
+2025-10-08 23:43       2951  ./index.html
+2025-10-08 23:52       7350  ./inscriptions.html
+2025-10-09 09:09       1525  ./js/admin.js
+2025-10-09 09:29      18690  ./js/inscriptions.js
+2025-10-09 10:26       5332  ./js/evenements.js
+2025-10-09 10:30      10254  ./js/groupes.js
+2025-10-09 18:45       2736  ./planning.html
+2025-10-09 18:45       5052  ./css/planning.css
+2025-10-09 18:50      16755  ./benevole.html
+2025-10-09 18:52       2548  ./js/menu.js
+2025-10-09 22:24      17846  ./js/planning.js
+2025-10-10 09:43       8000  ./eventgroupes.html
+2025-10-10 09:43      18211  ./js/eventgroupes.js
+2025-10-10 09:45       2102  ./_audit_publicadmin_20251010_094507.txt
+2025-10-10 09:45       2547  ./_audit.sh
+
+## HTML → referenced assets (href/src)

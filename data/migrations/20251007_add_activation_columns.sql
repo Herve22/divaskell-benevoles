@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN token_activation TEXT;
+ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 0;

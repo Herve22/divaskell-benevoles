@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Bénévoles Divaskell</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <!-- Conteneur pour le menu (inséré dynamiquement par menu.js) -->
+  <div id="menu-container"></div>
+
+  <div class="container mt-4">
+    <h1>🌟 Panneau d'Administration</h1>
+    
+    <div class="row mt-4">
+      <div class="col-md-4 mb-3">
+        <div class="card text-white bg-primary">
+          <div class="card-body">
+            <h5 class="card-title">📅 Événements</h5>
+            <p class="card-text">Gérer les événements et leurs dates</p>
+            <a href="evenements.html" class="btn btn-light">Accéder</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <div class="card text-white bg-success">
+          <div class="card-body">
+            <h5 class="card-title">👥 Groupes</h5>
+            <p class="card-text">Organiser les groupes de bénévoles</p>
+            <a href="groupes.html" class="btn btn-light">Accéder</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <div class="card text-white bg-warning">
+          <div class="card-body">
+            <h5 class="card-title">⏰ Créneaux</h5>
+            <p class="card-text">Définir les créneaux horaires</p>
+            <a href="creneaux.html" class="btn btn-light">Accéder</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="card text-white bg-info">
+          <div class="card-body">
+            <h5 class="card-title">✅ Inscriptions</h5>
+            <p class="card-text">Valider les inscriptions des bénévoles</p>
+            <a href="inscriptions.html" class="btn btn-light">Accéder</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6 mb-3">
+        <div class="card text-white bg-secondary">
+          <div class="card-body">
+            <h5 class="card-title">📊 Statistiques</h5>
+            <p class="card-text">Voir les stats globales</p>
+            <a href="stats.html" class="btn btn-light">Accéder</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-4">
+      <strong>👋 Bienvenue <span id="admin-name"></span> !</strong><br>
+      Vous êtes connecté en tant qu'administrateur.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    document.getElementById("admin-name").textContent = user.username || "Admin";
+  </script>
+  
+  <script src="js/menu.js"   ></script>
+</body>
+</html>

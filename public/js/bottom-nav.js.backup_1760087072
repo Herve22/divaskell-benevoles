@@ -1,0 +1,28 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  
+  if (!user || user.role !== 'user') {
+    return;
+  }
+
+  const currentPath = window.location.pathname;
+
+  const bottomNavHTML = `
+    <nav class="bottom-nav">
+      <a href="/public/index.html" class="nav-item ${currentPath.includes('/public/index.html') || currentPath === '/public/' || currentPath === '/public' ? 'active' : ''}">
+        <i class="bi bi-house-door"></i>
+        <span>Accueil</span>
+      </a>
+      <a href="/public/creneaux-publics.html" class="nav-item ${currentPath.includes('creneaux-publics.html') ? 'active' : ''}">
+        <i class="bi bi-calendar-event"></i>
+        <span>Créneaux</span>
+      </a>
+      <a href="/public/mes-inscriptions.html" class="nav-item ${currentPath.includes('mes-inscriptions.html') ? 'active' : ''}">
+        <i class="bi bi-list-check"></i>
+        <span>Inscriptions</span>
+      </a>
+    </nav>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', bottomNavHTML);
+});

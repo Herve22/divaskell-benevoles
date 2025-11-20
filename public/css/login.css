@@ -1,0 +1,351 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  max-width: 500px;
+  width: 100%;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 30px;
+  text-align: center;
+  color: white;
+}
+
+.logo-container {
+  margin-bottom: 20px;
+}
+
+.logo-container img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.logo-container img:hover {
+  transform: scale(1.05);
+}
+
+.auth-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.auth-header p {
+  font-size: 14px;
+  opacity: 0.95;
+  margin: 0;
+}
+
+/* BOUTON CRÉNEAUX BANNER */
+.creneaux-banner {
+  padding: 20px 30px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.btn-creneaux {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  background: white;
+  color: #f5576c;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-creneaux:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+  color: #f5576c;
+}
+
+.btn-creneaux > i:first-child {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.btn-text {
+  flex: 1;
+  text-align: left;
+}
+
+.btn-text strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.btn-text small {
+  display: block;
+  font-size: 13px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.btn-creneaux > i:last-child {
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.btn-creneaux:hover > i:last-child {
+  transform: translateX(5px);
+}
+
+.tab-switcher {
+  display: flex;
+  background: #f8f9fa;
+  padding: 5px;
+  border-radius: 10px;
+  margin: 20px 30px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.auth-body {
+  padding: 30px;
+}
+
+.form-panel {
+  display: none;
+}
+
+.form-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group i {
+  position: absolute;
+  left: 15px;
+  top: 43px;
+  color: #667eea;
+  font-size: 18px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 43px;
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
+  transition: color 0.3s;
+  z-index: 10;
+}
+
+.password-toggle:hover {
+  color: #667eea;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+.message:not(:empty) {
+  display: block;
+}
+
+.message.error {
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.message.success {
+  background-color: #efe;
+  color: #3c3;
+  border: 1px solid #cfc;
+}
+
+.footer-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.footer-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .auth-container {
+    border-radius: 15px;
+  }
+
+  .auth-header {
+    padding: 25px 20px;
+  }
+
+  .auth-body {
+    padding: 25px 20px;
+  }
+
+  .auth-header h1 {
+    font-size: 20px;
+  }
+
+  .logo-container img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .creneaux-banner {
+    padding: 15px 20px;
+  }
+
+  .btn-creneaux {
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .btn-creneaux > i:first-child {
+    font-size: 28px;
+  }
+
+  .btn-text strong {
+    font-size: 14px;
+  }
+
+  .btn-text small {
+    font-size: 12px;
+  }
+
+  .tab-switcher {
+    margin: 15px 20px;
+  }
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Admin — Bénévoles</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f7f9fb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #00b4a6;
+      color: white;
+      text-align: center;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+    }
+    nav a {
+      text-decoration: none;
+      color: white;
+      background: #00b4a6;
+      padding: 12px 18px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+    nav a:hover {
+      background: #01998e;
+      transform: translateY(-2px);
+    }
+    main {
+      margin: 0 auto;
+      width: 95%;
+      max-width: 1200px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 80vh;
+    }
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #777;
+      background: #f1f1f1;
+    }
+    @media (max-width: 600px) {
+      nav a {
+        flex: 1 1 45%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>📋 Tableau de bord — Administration Bénévoles</header>
+
+  <nav>
+    <a href="users.html" target="adminframe">👥 Utilisateurs</a>
+    <a href="groupes.html" target="adminframe">👪 Groupes</a>
+    <a href="creneaux.html" target="adminframe">📅 Créneaux</a>
+    <a href="evenements.html" target="adminframe">🎉 Événements</a>
+    <a href="inscriptions.html" target="adminframe">📝 Inscriptions</a>
+    <a href="responsables.html" target="adminframe">📞 Responsables</a>
+  </nav>
+
+  <main>
+    <iframe name="adminframe" src="users.html"></iframe>
+  </main>
+
+  <footer>
+    © 2025 - Administration Bénévoles · Divaskell Plougastell
+  </footer>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Veuillez vous connecter en tant qu'admin pour accéder à cette page.");
+      window.location.href = "/";
+    }
+  </script>
+</body>
+</html>
