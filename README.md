@@ -31,7 +31,6 @@ Application web full-stack pour gérer des bénévoles, événements, groupes et
 - `api/` - Serveur Express (port 8888), routes REST, middlewares JWT
 - `public/` - Interface bénévole
 - `publicadmin/` - Interface admin
-- `publicsuperadmin/` - Interface super-admin
 - `data/` - Base SQLite + migrations
 
 ---
